@@ -17,6 +17,7 @@ Older versions of Windows: Docker Toolbox - again, Docker version Docker 17.06.2
 ```
 
 [Fabric binaries]
+
 excute below command under `/Users/USER_NAME (for windows C:/Users/USER_NAME)`
 ```bash
 curl -sSL http://bit.ly/2ysbOFE | bash -s -- 1.4.1 1.4.1 0.4.15
@@ -127,7 +128,21 @@ excute stop.sh
 ./stop.sh
 ```
 
+## Extras
+1.If You want to test other chaincode, excute start.sh first and repeat above steps.
 
+2.If you want to put args when instantiating chaincode, edit start.sh and do above steps.
+
+[example]
+
+Before
+```
+docker exec cli peer chaincode instantiate -o orderer.example.com:7050 -C $CHANNEL_NAME -n ${CHAINCODE_NAME} -v ${VERSION} -c '{"Args":["init"]}'
+```
+After
+```
+docker exec cli peer chaincode instantiate -o orderer.example.com:7050 -C $CHANNEL_NAME -n ${CHAINCODE_NAME} -v ${VERSION} -c '{"Args":["init", "ARGS"...]}
+```
 
 
 
