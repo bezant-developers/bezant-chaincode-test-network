@@ -1,0 +1,184 @@
+#
+# Copyright IBM Corp All Rights Reserved
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+version: '2'
+
+networks:
+  basic:
+
+services:
+
+  orderer.example.com:
+    container_name: orderer.example.com
+    image: hyperledger/fabric-orderer:1.4.1
+    environment:
+      - ORDERER_GENERAL_LOGLEVEL=debug
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/etc/hyperledger/configtx/genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/etc/hyperledger/msp/orderer/msp
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/orderer
+    command: orderer
+    ports:
+      - 7050:7050
+    volumes:
+        - ./config/:/etc/hyperledger/configtx
+        - ./crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/:/etc/hyperledger/msp/orderer
+        - ./crypto-config/peerOrganizations/bezant.example.com/peers/peer0.bezant.example.com/:/etc/hyperledger/msp/peerbezant
+    networks:
+      - basic
+
+  peer0.bezant.example.com:
+    container_name: peer0.bezant.example.com
+    image: hyperledger/fabric-peer:1.4.1
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_PEER_ID=peer0.bezant.example.com
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_CHAINCODE_LOGGING_LEVEL=DEBUG
+      - CORE_PEER_LOCALMSPID=BezantMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/peer/
+      - CORE_PEER_ADDRESS=peer0.bezant.example.com:7051
+      # # the following setting starts chaincode containers on the same
+      # # bridge network as the peers
+      # # https://docs.docker.com/compose/networking/
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=net_basic
+      - CORE_LEDGER_STATE_STATEDATABASE=goleveldb
+      # - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb1:5984
+      # The CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME and CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD
+      # provide the credentials for ledger to connect to CouchDB.  The username and password must
+      # match the username and password set for the associated CouchDB.
+      # - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
+      # - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=
+      - CORE_PEER_GOSSIP_ENDPOINT=peer0.bezant.example.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.bezant.example.com:7051
+      - CORE_PEER_DISCOVERY_ENABLED=true
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: peer node start
+    ports:
+      - 7051:7051
+      - 7053:7053
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./crypto-config/peerOrganizations/bezant.example.com/peers/peer0.bezant.example.com/msp:/etc/hyperledger/msp/peer
+        - ./crypto-config/peerOrganizations/bezant.example.com/users:/etc/hyperledger/msp/users
+        - ./config:/etc/hyperledger/configtx
+    depends_on:
+      - orderer.example.com
+      # - couchdb1
+    networks:
+      - basic
+
+  # couchdb1:
+  #   container_name: couchdb1
+  #   image: hyperledger/fabric-couchdb:0.4.15
+  #   # Populate the COUCHDB_USER and COUCHDB_PASSWORD to set an admin user and password
+  #   # for CouchDB.  This will prevent CouchDB from operating in an "Admin Party" mode.
+  #   environment:
+  #     - COUCHDB_USER=
+  #     - COUCHDB_PASSWORD=
+  #   ports:
+  #     - 5984:5984
+  #   networks:
+  #     - basic
+
+  cli:
+    container_name: cli
+    image: hyperledger/fabric-tools:1.4.1
+    tty: true
+    environment:
+      - GOPATH=/opt/gopath
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_PEER_ID=cli
+      - CORE_PEER_ADDRESS=peer0.bezant.example.com:7051
+      - CORE_PEER_LOCALMSPID=BezantMSP
+      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/bezant.example.com/users/Admin@bezant.example.com/msp
+      - CORE_CHAINCODE_KEEPALIVE=10
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: /bin/bash
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./chaincode/:/opt/gopath/src
+        - ./crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
+    networks:
+        - basic
+        
+  peer1.bezant.example.com:
+    container_name: peer1.bezant.example.com
+    image: hyperledger/fabric-peer:1.4.1
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_PEER_ID=peer1.bezant.example.com
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_CHAINCODE_LOGGING_LEVEL=DEBUG
+      - CORE_PEER_LOCALMSPID=BezantMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/peer/
+      - CORE_PEER_ADDRESS=peer1.bezant.example.com:7051
+      # # the following setting starts chaincode containers on the same
+      # # bridge network as the peers
+      # # https://docs.docker.com/compose/networking/
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=net_basic
+      - CORE_LEDGER_STATE_STATEDATABASE=goleveldb
+      # - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb2:5984
+      # The CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME and CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD
+      # provide the credentials for ledger to connect to CouchDB.  The username and password must
+      # match the username and password set for the associated CouchDB.
+      # - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
+      # - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=
+      - CORE_PEER_GOSSIP_ENDPOINT=peer1.bezant.example.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.bezant.example.com:7051
+      - CORE_PEER_DISCOVERY_ENABLED=true
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: peer node start
+    ports:
+      - 8051:7051
+      - 8053:7053
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./crypto-config/peerOrganizations/bezant.example.com/peers/peer1.bezant.example.com/msp:/etc/hyperledger/msp/peer
+        - ./crypto-config/peerOrganizations/bezant.example.com/users:/etc/hyperledger/msp/users
+        - ./config:/etc/hyperledger/configtx
+    depends_on:
+      - orderer.example.com
+      # - couchdb2
+    networks:
+      - basic
+
+  # couchdb2:
+  #   container_name: couchdb2
+  #   image: hyperledger/fabric-couchdb:0.4.15
+  #   # Populate the COUCHDB_USER and COUCHDB_PASSWORD to set an admin user and password
+  #   # for CouchDB.  This will prevent CouchDB from operating in an "Admin Party" mode.
+  #   environment:
+  #     - COUCHDB_USER=
+  #     - COUCHDB_PASSWORD=
+  #   ports:
+  #     - 6984:5984
+  #   networks:
+  #     - basic
+
+  cli2:
+    container_name: cli2
+    image: hyperledger/fabric-tools:1.4.1
+    tty: true
+    environment:
+      - GOPATH=/opt/gopath
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_PEER_ID=cli2
+      - CORE_PEER_ADDRESS=peer1.bezant.example.com:7051
+      - CORE_PEER_LOCALMSPID=BezantMSP
+      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/bezant.example.com/users/Admin@bezant.example.com/msp
+      - CORE_CHAINCODE_KEEPALIVE=10
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: /bin/bash
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./chaincode/:/opt/gopath/src
+        - ./crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
+    networks:
+        - basic
