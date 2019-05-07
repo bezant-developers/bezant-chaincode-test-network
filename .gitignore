@@ -95,7 +95,3 @@ docker-compose.yml
 
 bin
 
-crypto-config
-crypto-config/**
-config
-config/**
