@@ -37,7 +37,9 @@ source ./generate.sh bezant-channel
 echo "Clearing environment.."
 docker rm -f $(docker ps -aq)
 
-docker-compose -f docker-compose.yml down
+if [ -f "docker-compose.yml" ]; then
+	docker-compose -f docker-compose.yml down
+fi
 
 echo "Removing old chaincode images.."
 # docker rmi $(docker images | grep example.com-chaincode | tr -s ' ' | cut -d ' ' -f 3)
