@@ -157,9 +157,9 @@ docker exec cli peer chaincode invoke -o orderer.example.com:7050 -C bezant-chan
 docker exec cli peer chaincode query -C bezant-channel -n simple-go --peerAddresses peer0.bezant.example.com:7051 -c '{"Args":["get", "a"]}'
 ```
 
-``Get enrollmentId``
+``Put and get enrollmentId``
 ```bash
-docker exec cli peer chaincode query -C bezant-channel -n simple-go --peerAddresses peer0.bezant.example.com:7051 -c '{"Args":["getEnrollmentId"]}'
+docker exec cli peer chaincode invoke -o orderer.example.com:7050 -C bezant-channel -n simple-go --peerAddresses peer0.bezant.example.com:7051 -c '{"Args":["putAndGetEnrollmentId", "a", "10"]}'
 ```
 
 ``Instantiate``
