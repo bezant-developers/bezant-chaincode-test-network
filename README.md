@@ -51,7 +51,7 @@ simple-java
 ```bash
 java chaincode : src, build.gradle(pom.xml)
 node chaincode : *.js, package.json
-go chaincode : all files
+go chaincode : all files (If your chaincode needs external packages, make sure you pre-download external packages using package manager)
 ```
 
 3.excute start.sh
