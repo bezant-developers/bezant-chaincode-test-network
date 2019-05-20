@@ -16,18 +16,6 @@ MacOSX, *nix, or Windows 10: Docker Docker version 17.06.2-ce or greater is requ
 Older versions of Windows: Docker Toolbox - again, Docker version Docker 17.06.2-ce or greater is required.
 ```
 
-[Fabric binaries]
-
-excute below command under `/Users/USER_NAME (for windows C:/Users/USER_NAME)`
-```bash
-curl -sSL http://bit.ly/2ysbOFE | bash -s -- 1.4.1 1.4.1 0.4.15
-```
-
-[example]
-```bash
- on my local, fabric-samples files is downloaded under `/Users/philip/fabric-samples`
-```
-
 For more detail, visit https://hyperledger-fabric.readthedocs.io/en/release-1.4/getting_started.html
 
 
