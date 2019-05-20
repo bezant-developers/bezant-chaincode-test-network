@@ -7,7 +7,6 @@ You should pre-check your chaincode before launch this. (eg. typo, runtime excep
 
 ## Prerequisites
 - Docker
-- Fabric binaries
 
 [Docker]
 ```bash
