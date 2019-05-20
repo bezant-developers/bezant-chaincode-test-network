@@ -42,14 +42,14 @@ For more detail, visit https://hyperledger-fabric.readthedocs.io/en/release-1.4/
 [example]
 
 ```bash
-mkdir ./chaincode/sample-cc
-cp YOUR_CHAINCODE_FILES ./chaincode/sample-cc
+mkdir ./chaincode/simple-java
+cp YOUR_CHAINCODE_FILES ./chaincode/simple-java
 
 ```
 
 [folder structure example]
 ```bash
-sample-cc
+simple-java
 ├── build.gradle
 └── src
     └── main
@@ -77,7 +77,7 @@ go chaincode : all files
 
 [example]
 ```bash
-Please input chaincode name : sample-cc
+Please input chaincode name : simple-java
 Please input chaincode version (ex- 1.0) :  1.0
 Please input chaincode language (ex- go, java, node) : java
 ```
@@ -107,9 +107,9 @@ docker exec cli peer chaincode query -C bezant-channel -n CHAINCODE_NAME -c '{"A
 
 [example]
 ```bash
-docker exec cli peer chaincode invoke -C bezant-channel -n sample-cc -c '{"Args":["transfer", "a", "b", "10"]}'
+docker exec cli peer chaincode invoke -C bezant-channel -n simple-java -c '{"Args":["put", "a", "10"]}'
 
-docker exec cli peer chainocde query -C bezant-channel -n sample-cc -c '{"Args":["get","a"]}'
+docker exec cli peer chainocde query -C bezant-channel -n simple-java -c '{"Args":["get","a"]}'
 ```
 
 
