@@ -4,8 +4,10 @@ export MSYS_NO_PATHCONV=1
 CHANNEL_NAME=bezant-channel
 
 read -p "Please input chaincode name : " CHAINCODE_NAME
-read -p "Please input chaincode version (ex- 1.0) :  " VERSION
+#read -p "Please input chaincode version (ex- 1.0) :  " VERSION
 read -p "Please input chaincode language (ex- go, java, node) : " LANGUAGE
+
+VERSION=1.0
 
 case "$LANGUAGE" in
 "go")
