@@ -107,6 +107,29 @@ docker exec cli peer channel getinfo -c bezant-channel
 ```
 
 
+## How to change user identity
+
+We already set 5 different users.
+
+```bash
+1. Admin@bezant.example.com
+2. User1@bezant.example.com
+3. User2@bezant.example.com
+4. User3@bezant.example.com
+5. User4@bezant.example.com
+```
+
+if you want to change user identity and then invoke/query a chaincode do the following.
+
+```bash
+docker exec -ite CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/bezant.example.com/users/$USERNAME/msp cli peer chaincode $INVOKE/QUERY -C $CHANNELNAME -n $CHAINCODENAME -c '{"Args":[$FUNCTIONNAME, $ARGS...]}'
+
+
+ex)
+docker exec -ite CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/bezant.example.com/users/User1@bezant.example.com/msp cli peer chaincode invoke -C bezant-channel -n simple-java -c '{"Args":["put","a","10"]}' 
+```
+
+
 ## Stop network
 
 excute stop.sh
